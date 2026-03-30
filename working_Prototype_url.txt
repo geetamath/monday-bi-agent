@@ -1,2 +1,3 @@
-Live App URL: https://9e500f82-e2f5-4460-b0cb-5661aae57184-00-bgazp7tir2rr.picard.replit.dev/
+Live App URL: https://insight-engine--gsmvjp.replit.app/
 GitHub Repo URL: https://github.com/geetamath/monday-bi-agent
+Demo Video: https://www.loom.com/share/b803b4a3ac7740ee8375ef439dcfa0dc
