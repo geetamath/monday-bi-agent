@@ -2,20 +2,14 @@
 
 > AI agent that answers natural language business questions about Monday.com data in seconds.
 
- **[Live Demo](https://9e500f82-e2f5-4460-b0cb-5661aae57184-00-bgazp7tir2rr.picard.replit.dev/)** | 📖 **[Decision Log](DECISION_LOG.md)**
-## Important: Replit Free Tier Note
-This app is hosted on Replit's free tier. 
+**[Live Demo](https://insight-engine--gsmvjp.replit.app/)** | 📖 **[Decision Log](DECISION_LOG.md)**
 
-For a production deployment, this would be hosted on an always-on service like Render or Railway.
 ---
 
 ##  The Problem
 
 Executives need quick answers across multiple Monday.com boards. Current process:
-- Manually export data
-- Clean inconsistent formats  
-- Run custom analysis for each question
-- Deal with missing data
+- Manually export data → Clean inconsistent formats → Run custom analysis → Deal with missing data
 
 **This agent provides instant AI-powered insights through natural language queries.**
 
@@ -24,43 +18,69 @@ Executives need quick answers across multiple Monday.com boards. Current process
 ##  What It Does
 
 -  Ask questions in plain English
--  Analyzes Work Orders & Deals data from Monday.com
+-  Analyzes Work Orders & Deals data live from Monday.com
 -  Handles messy real-world data (missing values, inconsistent formats)
 -  Provides business insights, not just raw numbers
--  Real-time data (no hardcoded CSVs)
+-  Real-time data — no hardcoded CSVs
+-  Stores analysis history for reference
 
 ### Example Questions:
-- "How's our pipeline for energy sector this quarter?"
-- "What's our total revenue from closed deals?"
-- "Show me high priority work orders"
+- "Which deals are most likely to close this quarter?"
+- "What are the top 3 risks in current work orders?"
+- "Show me high priority work orders needing immediate attention"
 - "Which sectors are performing best?"
+- "Give me a 5-line executive summary of our business health"
 
 ---
 
 ##  Screenshots
 
 ### Main Interface
-![Dashboard](OUTPUT-UI/BI Agent-Output Screenshot.JPG)
+![Dashboard](OUTPUT-UI/BI%20Agent-Output%20Screenshot.JPG)
 
-### AI Analysis OUTPUT
-![AI Insights](OUTPUT-UI/BI Agent-Analysis Output.JPG)
+### AI Analysis Output
+![AI Insights](OUTPUT-UI/BI%20Agent-Analysis%20Output.JPG)
 
 ---
 
 ##  Tech Stack
 
-**Frontend:** React  
-**Backend:** Node.js  
-**AI:** Groq API (Llama 3.3 70B)  
-**Data:** Monday.com GraphQL API  
-**Hosting:** Replit  
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React |
+| Backend | Node.js + Express |
+| AI Model | Groq API — Llama 3.3 70B |
+| Data Source | Monday.com GraphQL API |
+| Database | PostgreSQL (analysis history) |
+| Hosting | Replit (always-on deployment) |
+
+---
+
+##  Architecture
+
+```
+User Question
+     ↓
+React Frontend
+     ↓
+Node.js API Gateway
+     ↓
+Monday.com GraphQL API (fetch live data)
+     ↓
+Smart Filter (limit to 15 relevant records)
+     ↓
+Groq AI — Llama 3.3 70B (analyze)
+     ↓
+Structured Business Insight → User
+```
 
 ---
 
 ##  Quick Start
+
 ```bash
 # Clone
-git clone https://github.com/yourusername/monday-bi-agent.git
+git clone https://github.com/geetamath/monday-bi-agent.git
 cd monday-bi-agent
 
 # Install
@@ -78,96 +98,74 @@ npm start
 
 **Setup Details:**
 1. Import CSVs to Monday.com as separate boards
-2. Get API key from Monday.com → Developers
-3. Get free Groq API key from console.groq.com
-4. Copy board IDs from Monday.com URLs
+2. Get API key: Monday.com → Developers
+3. Get free Groq API key: console.groq.com
+4. Copy board IDs from Monday.com board URLs
 
 ---
 
-##  Architecture
-```
-User Question → API Gateway → Monday.com (fetch data) → Groq AI (analyze) → Insights
-```
+##  Key Engineering Decisions
 
-**Key Features:**
-- Dynamic GraphQL queries (only fetches needed data)
-- Handles missing/inconsistent data gracefully
-- Provides caveats when data is incomplete
+**Why Groq?**
+Free tier, fast inference (~1s response), no credit card needed. Llama 3.3 70B gives GPT-4 quality for BI queries.
+
+**Why GraphQL?**
+Flexible data fetching — only request the fields needed, reducing payload size significantly.
+
+**Token Limit Challenge & Solution**
+Monday.com boards had 500+ records (~60,000 tokens). Groq's limit is 12,000 tokens.
+
+Solution: Implemented a smart pre-filter that scores each record by keyword relevance to the user's question, keeps only the top 15 matching records, strips empty fields, and truncates long text — reducing token usage from 60,000 to under 5,000 per request.
+
+**Why direct API over MCP?**
+Simpler debugging, better documentation, faster development for a time-constrained build.
+
+See **[DECISION_LOG.md](DECISION_LOG.md)** for full technical decisions.
 
 ---
 
-##  Key Decisions
+##  What I Learned
 
-**Why Groq?** Free, fast, no credit card needed for prototyping
-
-**Why GraphQL?** Flexible data fetching, only get what we need
-
-**Why direct API?** Simpler debugging, better docs than MCP for this timeline
-
-**Data Quality:** Flags incomplete data, normalizes formats, never guesses
-
-See **[DECISION_LOG.md](DECISION_LOG.md)** for detailed technical decisions.
+- AI prompt engineering for business intelligence use cases
+- Handling real-world messy data (missing values, inconsistent formats)
+- GraphQL API optimization and dynamic query building
+- Token budget management for LLM API calls
+- Building and deploying a full-stack AI product in 4–6 hours
 
 ---
 
 ##  Future Improvements
 
 **Short-term:**
-- Data visualization (charts/graphs)
-- Caching for faster responses
+- Data visualisation (charts and trend graphs)
+- Caching layer for repeated queries
 - PDF export for leadership reports
 
 **Long-term:**
-- Predictive analytics (forecast revenue)
+- Predictive analytics (revenue forecasting)
 - Natural language actions ("Create a work order for...")
-- Fine-tuned model on company terminology
-
----
-
-##  What I Learned
-
-- AI prompt engineering for business intelligence
-- Handling real-world messy data
-- GraphQL API optimization
-- Building under time pressure (built in 4-6 hours)
-
-**Challenge:** Groq token limits with large datasets  
-**Solution:** Implemented data filtering before AI call
+- Fine-tuned model on company-specific terminology
 
 ---
 
 ##  Project Context
 
 Built as a technical assignment demonstrating:
-✅ AI agent development  
-✅ API integration  
-✅ Real-time data analysis  
-✅ Production-quality code in 6 hours  
+- AI agent development with real LLM integration
+- Live API data fetching (no hardcoded data)
+- Production-quality engineering under time pressure
+- Full-stack deployment
 
----
-
-## Assignment Requirements Met
-
-- ✅ Dynamic Monday.com integration (no hardcoded data)
-- ✅ Handles messy data gracefully
-- ✅ Natural language understanding
-- ✅ Business intelligence insights
-- ✅ Leadership update preparation
+**Assignment Requirements:**
+- Dynamic Monday.com integration (no hardcoded data) 
+- Handles messy data gracefully 
+- Natural language understanding 
+- Business intelligence insights 
+- Leadership update preparation 
 
 ---
 
 ##  Contact
 
-**Geeta Math**  
+**Geeta Math**
 📧 gsmvjp@gmail.com | 💼 [LinkedIn](https://www.linkedin.com/in/geeta-math-128874353/) | 🌐 [Portfolio](https://geetamath.github.io/portfolio/)
-
----
-
-## ⚠️ Note
-Hosted on Replit free tier. If link shows "Run this app", wait 30 seconds for wake-up or contact me for immediate demo.
-
----
-
-*Built with ❤️ as a demonstration of AI agent capabilities for business intelligence*
-
-**⭐ Star this repo if you found it useful!**
